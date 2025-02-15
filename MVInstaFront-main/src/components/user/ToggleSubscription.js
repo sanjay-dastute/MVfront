@@ -27,7 +27,7 @@ const SubscriptionToggle = memo(() => {
       setIsSubscribed(response.data.isSubscriptionEnabled);
     } catch (error) {
       console.error('Error fetching subscription status:', error);
-      message.error('Failed to fetch subscription status');
+      message.error('Error while fetching automated response status');
     } finally {
       setLoading(false);
     }
@@ -50,12 +50,11 @@ const SubscriptionToggle = memo(() => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      message.success(`Successfully ${checked ? 'subscribed' : 'unsubscribed'}`);
-      // await fetchSubscriptionStatus();
+      message.success(`Automated response ${checked ? 'turned on' : 'turned off'} successfully`);
       setIsSubscribed(checked);
     } catch (error) {
       console.error('Error toggling subscription:', error);
-      message.error('Failed to toggle subscription');
+      message.error(`Error while turning ${checked ? 'on' : 'off'} automated response`);
       setIsSubscribed(!checked); // Revert the toggle if the API call fails
     } finally {
       setLoading(false);

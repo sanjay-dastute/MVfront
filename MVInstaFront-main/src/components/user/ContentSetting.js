@@ -33,8 +33,8 @@ const ContentSettingForm = ({ refreshNotifications }) => {
         form.setFieldsValue({ contentOption: activePrompt.promptId });
       }
     } catch (error) {
-      console.error("Error fetching prompts:", error);
-      message.error("Failed to fetch prompts");
+      console.error("Error loading context settings:", error);
+      message.error("Failed to load context settings");
     } finally {
       setLoading(false);
     }
@@ -51,17 +51,17 @@ const ContentSettingForm = ({ refreshNotifications }) => {
       const selectedPrompt = prompts.find(p => p.promptId === selectedPromptId);
       await updateContextSetting(selectedPromptId, {
         prompt: selectedPrompt.prompt,
-        isActive: true  // Set the selected prompt as active
+        isActive: true
       });
 
       const notificationMessage = `Context Setting Updated to: ${selectedPrompt.prompt}`;
       await createNotification(notificationMessage);
 
-      message.success("Context Setting Updated successfully");
+      message.success("Context settings saved successfully");
       await fetchPrompts(); // Reload prompts after update
     } catch (error) {
-      console.error("Error updating prompt:", error);
-      message.error("Failed to update prompt");
+      console.error("Error updating context settings:", error);
+      message.error("Failed to save context settings");
     } finally {
       setLoading(false);
     }
@@ -94,8 +94,8 @@ const ContentSettingForm = ({ refreshNotifications }) => {
                       <Input.TextArea
                         value={prompt.prompt}
                         placeholder="Enter your custom prompt here"
-                      autoSize={{ minRows: 3 }}
-                      style={{ width: '450px' }}
+                        autoSize={{ minRows: 3, maxRows: 10 }}
+                        style={{ width: '100%', minWidth: '450px' }}
                         onChange={(e) => handlePromptChange(prompt.promptId, e.target.value)}
                       />
                     </Radio>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Button } from "antd";
+import { Button, message } from "antd";
 import { initInstagramSdk, instagramLogin, resetInstagramSdk, getInstagramLoginStatus, getInstagramShortLivedToken } from "../../utils/InstagramSDK";
 
 import { useNavigate } from "react-router";
@@ -9,7 +9,7 @@ const InstagramLogin = () => {
     const [isLoggingIn, setIsLoggingIn] = useState(false);
     // const [loginError, setLoginError] = useState(null);
 
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
     //   const initSDK = useCallback(async () => {
     //     try {
@@ -62,6 +62,7 @@ const InstagramLogin = () => {
                 })
                 .catch((error) => {
                     console.error('Error during Instagram login:', error);
+                    handleLoginFailure();
                 });
 
             // let accessToken = await
@@ -83,11 +84,9 @@ const InstagramLogin = () => {
 
     const handleLoginFailure = async () => {
         console.log("Login was cancelled or failed. Resetting ...");
-        // setIsSDKInitialized(false);
         setIsLoggingIn(false);
-        // await resetInstagramSdk();
-        // Force a "refresh" by reloading the current page
-        window.location.reload();
+        message.error("Unable to login with Instagram. Please try again.");
+        navigate("/login");
     };
 
     return (

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Button } from "antd";
+import { Button, message } from "antd";
 import { FacebookOutlined } from '@ant-design/icons';
 import {
   getFacebookLoginStatus,
@@ -84,8 +84,8 @@ const FacebookLogin = () => {
     setIsSDKInitialized(false);
     setIsLoggingIn(false);
     await resetFacebookSdk();
-    // Force a "refresh" by reloading the current page
-    window.location.reload();
+    message.error("Unable to login with Facebook. Please try again.");
+    navigate("/login");
   };
 
   return (

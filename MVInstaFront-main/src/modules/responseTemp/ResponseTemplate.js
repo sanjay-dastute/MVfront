@@ -31,7 +31,8 @@ const ResponseTemplate = ({ refreshNotifications }) => {
           paymentType: responseData.paymentType,
         });
       } catch (error) {
-        message.error("Failed to load response template data");
+        console.error("Error loading response template:", error);
+        message.error("Failed to load response template. Please try again.");
       }
     };
 
@@ -50,7 +51,7 @@ const ResponseTemplate = ({ refreshNotifications }) => {
 
     try {
       const response = await submitResponseTemplate(requestData);
-      message.success("Response Template Update Successfully");
+      message.success("Response template saved successfully");
 
       // Create notification
       try {
@@ -62,7 +63,7 @@ const ResponseTemplate = ({ refreshNotifications }) => {
       }
     } catch (error) {
       console.error("Error:", error);
-      message.error("Failed to update response template");
+      message.error("Failed to save response template. Please try again.");
     }
   };
 
@@ -94,7 +95,8 @@ const ResponseTemplate = ({ refreshNotifications }) => {
             label="About Us"
             name="aboutUs"
             rules={[
-              { required: true, message: "Please input the About Us section!" },
+              { required: true, message: "About Us section is required" },
+              { min: 10, message: "About Us section must be at least 10 characters" }
             ]}>
             <TextArea rows={4} />
           </Form.Item>
@@ -105,7 +107,8 @@ const ResponseTemplate = ({ refreshNotifications }) => {
             rules={[
               {
                 required: false,
-                // message: "Please input the Special Instruction section!",
+                min: 10,
+                message: "Special Instructions must be at least 10 characters if provided"
               },
             ]}>
             <TextArea rows={4} />
@@ -117,10 +120,15 @@ const ResponseTemplate = ({ refreshNotifications }) => {
             rules={[
               {
                 required: false,
-                // message: "Please input the Shipping Policy section!",
+                min: 10,
+                message: "Shipping Policy must be at least 10 characters if provided"
               },
             ]}>
-            <TextArea rows={4} />
+            <TextArea 
+              rows={4}
+              showCount={false}
+              autoSize={{ minRows: 4, maxRows: 8 }}
+            />
           </Form.Item>
 
           <Form.Item
@@ -129,10 +137,15 @@ const ResponseTemplate = ({ refreshNotifications }) => {
             rules={[
               {
                 required: false,
-                // message: "Please input the Shipping Policy section!",
+                min: 10,
+                message: "Return Policy must be at least 10 characters if provided"
               },
             ]}>
-            <TextArea rows={4} />
+            <TextArea 
+              rows={4}
+              showCount={false}
+              autoSize={{ minRows: 4, maxRows: 8 }}
+            />
           </Form.Item>
 
           {/* <Form.Item
@@ -156,7 +169,10 @@ const ResponseTemplate = ({ refreshNotifications }) => {
                 // message: "Please input the Payment Type!"
               },
             ]}>
-            <Input />
+            <Input 
+              showCount={false}
+              maxLength={null}
+            />
           </Form.Item>
 
           <Form.Item>

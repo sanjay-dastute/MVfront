@@ -69,9 +69,10 @@ const ProductList = memo(({ refreshNotifications }) => {
       else productTaggedMedia = await getProductTaggedMedia(productId, "untagged");
       setProductTaggedMedia(productTaggedMedia);
     }
-    catch {
+    catch (error) {
+      console.error("Error loading tagged media:", error);
       setError(error);
-      message.error("Failed to load data");
+      message.error("Failed to load tagged media");
     }
   }
 
@@ -130,13 +131,13 @@ const ProductList = memo(({ refreshNotifications }) => {
           productId: taggingProductId
         }))
       });
-      message.success("Media tagged successfully");
+      message.success("Product tagged to media successfully");
       setIsTagModalVisible(false);
       fetchData();
-      // refreshNotifications();
+      refreshNotifications();
     } catch (error) {
-      console.error("Error tagging media:", error);
-      message.error("Failed to tag media");
+      console.error("Error tagging product:", error);
+      message.error("Failed to tag product to media");
     }
   };
 
