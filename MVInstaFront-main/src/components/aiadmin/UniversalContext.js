@@ -32,7 +32,7 @@ const UniversalContext = ({ refreshNotifications }) => {
       }
     } catch (error) {
       console.error("Error fetching universal contexts:", error);
-      message.error("Failed to fetch universal contexts");
+      message.error("Failed to load context settings. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -40,7 +40,7 @@ const UniversalContext = ({ refreshNotifications }) => {
 
   const onFinish = async () => {
     if (!selectedContextId) {
-      message.error("Please select a context");
+      message.error("Please select a context setting to continue.");
       return;
     }
 
@@ -51,11 +51,11 @@ const UniversalContext = ({ refreshNotifications }) => {
         isActive: true,
         prompt: selectedContext.prompt
       });
-      message.success("Universal Context updated successfully");
+      message.success("Context settings saved successfully");
       await fetchContexts();
     } catch (error) {
       console.error("Error updating universal context:", error);
-      message.error("Failed to update universal context");
+      message.error("Failed to save context settings. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -88,9 +88,10 @@ const UniversalContext = ({ refreshNotifications }) => {
                     <Input.TextArea
                       value={context.prompt}
                       placeholder="Enter your custom universal prompt here"
-                      autoSize={{ minRows: 3 }}
-                      style={{ width: screenSize < 576 ? "350px" : "450px" }}
+                      autoSize={{ minRows: 3, maxRows: 10 }}
+                      style={{ width: '100%', minWidth: screenSize < 576 ? "350px" : "450px" }}
                       onChange={(e) => handlePromptChange(context.contextId, e.target.value)}
+                      showCount={false}
                     />
                   </Radio>
                 ))}

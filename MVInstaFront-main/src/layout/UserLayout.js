@@ -4,17 +4,12 @@ import {
   Popover,
   Layout,
   Menu,
-  // Typography,
-  // Badge,
-  // Dropdown,
-  // Avatar,
-  // Spin,
-  // message,
   theme,
   Drawer,
   List,
   Avatar,
-  // Switch
+  message,
+  Spin
 } from "antd";
 import {
   UserOutlined,
@@ -43,7 +38,7 @@ import UserInfo from "../components/user/UserInfo";
 import { roles, menuPermissions } from "../services/roleService";
 import {
   notificationList,
-  // markNotificationAsRead,
+  markNotificationAsRead,
 } from "../services/conversationService";
 // import { useNavigate } from "react-router-dom";
 // import moment from "moment";
@@ -60,7 +55,7 @@ const { SubMenu } = Menu;
 
 const UserLayout = memo(({ children, selectedMenuKey, onMenuSelect, userRole }) => {
   const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(true);//for notification want to be changed
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [visible, setVisible] = useState(false);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
@@ -174,13 +169,15 @@ const UserLayout = memo(({ children, selectedMenuKey, onMenuSelect, userRole }) 
       const sortedData = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       const mappedNotifications = sortedData.map(item => ({
         id: item._id,
-        avatar: 'https://via.placeholder.com/40', // Replace this with the actual avatar URL if available
+        avatar: 'https://via.placeholder.com/40',
         title: item.message,
-        description: moment(item.createdAt).fromNow(), // Formatting date like "5 minutes ago"
+        description: moment(item.createdAt).fromNow(),
       }));
       setNotifications(mappedNotifications);
-    } catch (err) {
-      setError(err);
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      message.error('Failed to load notifications');
+      setError(error);
     } finally {
       setLoading(false);
     }
@@ -201,14 +198,16 @@ const UserLayout = memo(({ children, selectedMenuKey, onMenuSelect, userRole }) 
 
 
 
-  // const handleNotificationMouseOver = async (notificationId) => {
-  //   try {
-  //     await markNotificationAsRead(notificationId);
-  //     fetchNotifications();
-  //   } catch (error) {
-  //     message.error("Failed to mark notification as read.");
-  //   }
-  // };
+  const handleNotificationClick = async (notificationId) => {
+    try {
+      await markNotificationAsRead(notificationId);
+      message.success("Notification marked as read");
+      await fetchNotifications();
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+      message.error("Failed to mark notification as read");
+    }
+  };
 
   const renderMenuItems = useCallback(() => {
     const permittedKeys = menuPermissions[userRole];
@@ -319,30 +318,31 @@ const UserLayout = memo(({ children, selectedMenuKey, onMenuSelect, userRole }) 
             title={"Notifications"}
             placement="left"
             open={visible}
-            // loading={loading}
+            loading={loading}
             onClose={() => setVisible(false)}
           >
-            <List
-              itemLayout="horizontal"
-              dataSource={notifications}
-              renderItem={item => (
-                <List.Item
-                  // actions={[
-                  //   <Button type="link" key="view">View</Button>, // Optional action buttons
-                  // ]}
-                  style={{
-                    padding: '10px 16px',
-                    borderBottom: '1px solid #f0f0f0', // Adds a separator between notifications
-                  }}
-                >
-                  <List.Item.Meta
-                    avatar={<Avatar src={item.avatar} />}
-                    title={<a href="#!">{item.title}</a>}
-                    description={item.description}
-                  />
-                </List.Item>
-              )}
-            />
+            <Spin spinning={loading}>
+              <List
+                itemLayout="horizontal"
+                dataSource={notifications}
+                renderItem={item => (
+                  <List.Item
+                    onClick={() => handleNotificationClick(item.id)}
+                    style={{
+                      padding: '10px 16px',
+                      borderBottom: '1px solid #f0f0f0',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <List.Item.Meta
+                      avatar={<Avatar src={item.avatar} />}
+                      title={item.title}
+                      description={item.description}
+                    />
+                  </List.Item>
+                )}
+              />
+            </Spin>
           </Drawer>
         </Sider> :
           <Sider
@@ -399,33 +399,34 @@ const UserLayout = memo(({ children, selectedMenuKey, onMenuSelect, userRole }) 
               title={"Notifications"}
               placement="left"
               open={visible}
-              // loading={loading}
+              loading={loading}
               onClose={() => {
                 setVisible(false);
                 // onMenuSelect(selectedMenuKey)
               }}
             >
-              <List
-                itemLayout="horizontal"
-                dataSource={notifications}
-                renderItem={item => (
-                  <List.Item
-                    // actions={[
-                    //   <Button type="link" key="view">View</Button>, // Optional action buttons
-                    // ]}
-                    style={{
-                      padding: '10px 16px',
-                      borderBottom: '1px solid #f0f0f0', // Adds a separator between notifications
-                    }}
-                  >
-                    <List.Item.Meta
-                      avatar={<Avatar src={item.avatar} />}
-                      title={<a href="#!">{item.title}</a>}
-                      description={item.description}
-                    />
-                  </List.Item>
-                )}
-              />
+              <Spin spinning={loading}>
+                <List
+                  itemLayout="horizontal"
+                  dataSource={notifications}
+                  renderItem={item => (
+                    <List.Item
+                      onClick={() => handleNotificationClick(item.id)}
+                      style={{
+                        padding: '10px 16px',
+                        borderBottom: '1px solid #f0f0f0',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <List.Item.Meta
+                        avatar={<Avatar src={item.avatar} />}
+                        title={item.title}
+                        description={item.description}
+                      />
+                    </List.Item>
+                  )}
+                />
+              </Spin>
             </Drawer>
           </Sider>}
 
